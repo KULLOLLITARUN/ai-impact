@@ -45,7 +45,13 @@ class RepoIndex:
 def build_repo_index(repo_path: str) -> RepoIndex:
     files: dict[str, FileIndex] = {}
     for root, _dirs, filenames in os.walk(repo_path):
-        if any(part.startswith(".") for part in root.split(os.sep)):
+        # Skip hidden directories (.git, .venv, etc.) -- but check this against
+        # the path *relative to repo_path*, not the raw walked root. A relative
+        # repo_path like "." makes os.walk's first root literally the string
+        # ".", which itself starts with "." and would otherwise wrongly skip
+        # the repo's own top-level files on every relative-path invocation.
+        rel_root = os.path.relpath(root, repo_path)
+        if rel_root != "." and any(part.startswith(".") for part in rel_root.split(os.sep)):
             continue
         for name in filenames:
             if not name.endswith(".py"):

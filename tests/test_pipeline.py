@@ -145,3 +145,25 @@ def test_staged_mode_analyzes_uncommitted_index_changes(git_repo):
     assert finding.risk_evidence["signature_changed"] is True
     assert finding.risk == RiskLevel.HIGH
     assert any(ac.symbol.qualified_name.endswith("login") for ac in finding.affected_callers)
+
+
+def test_relative_repo_path_is_analyzed_correctly(git_repo, monkeypatch):
+    """Regression test: build_repo_index('.') previously returned zero files,
+    because os.walk('.')'s first root is the literal string "." which the
+    hidden-directory filter wrongly matched as a dotfile/dotdir and skipped --
+    silently breaking every default (no --repo flag) CLI invocation. Fixture
+    tests all use an absolute tmp_path, so this bug was invisible to them;
+    only running from a relative cwd (as the CLI's --repo "." default does)
+    surfaced it. See core/graph.py build_repo_index.
+    """
+    git_repo.write("m.py", "def f(x):\n    return x\n")
+    git_repo.commit("base")
+    git_repo.write("m.py", "def f(x, y=1):\n    return x + y\n")
+    git_repo.commit("change")
+
+    monkeypatch.chdir(git_repo.path)
+    report = analyze(".", diff_ref="HEAD~1")
+
+    assert len(report.findings) == 1
+    assert report.findings[0].changed_symbol.qualified_name.endswith("f")
+    assert report.findings[0].risk_evidence["signature_changed"] is True
