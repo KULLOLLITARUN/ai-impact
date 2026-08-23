@@ -28,7 +28,13 @@ def _run_git_diff(repo_path: str, diff_ref: str | None, staged: bool) -> str:
         args.append("--staged")
     elif diff_ref:
         args.append(diff_ref)
-    result = subprocess.run(args, capture_output=True, text=True, check=True)
+    # stdin=DEVNULL: without this, the child inherits the parent's real stdin
+    # handle. Under a stdio-transport MCP server, that handle is the live
+    # JSON-RPC pipe -- letting `git` inherit it can deadlock the connection
+    # (observed as the tool call hanging forever on Windows). git never needs
+    # stdin here, so cut the inheritance explicitly rather than rely on git
+    # not touching a handle it was never meant to have.
+    result = subprocess.run(args, capture_output=True, text=True, check=True, stdin=subprocess.DEVNULL)
     return result.stdout
 
 

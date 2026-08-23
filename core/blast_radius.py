@@ -24,10 +24,13 @@ MAX_DEPTH = 3
 def _old_source(repo_path: str, diff_ref: str | None, staged: bool, path: str) -> str | None:
     """Best-effort fetch of a file's pre-change content. None if unavailable (new file)."""
     ref = "HEAD" if staged else (diff_ref or "HEAD")
+    # stdin=DEVNULL: see the matching comment in diff.py -- prevents inheriting
+    # a live MCP JSON-RPC pipe as this child's stdin (Windows deadlock).
     result = subprocess.run(
         ["git", "-C", repo_path, "show", f"{ref}:{path}"],
         capture_output=True,
         text=True,
+        stdin=subprocess.DEVNULL,
     )
     return result.stdout if result.returncode == 0 else None
 
