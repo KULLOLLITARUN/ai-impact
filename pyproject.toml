@@ -9,7 +9,12 @@ description = "Deterministic change-impact and test-gap analyzer for AI-assisted
 requires-python = ">=3.10"
 
 [project.optional-dependencies]
-mcp = ["mcp>=1.0.0"]
+# mcp 2.0.0 is a breaking release that removed mcp.server.fastmcp entirely
+# (restructured into mcp.server.mcpserver and others). Our server.py is
+# written and verified against the 1.x FastMCP API -- capped below 2.0 until
+# that's deliberately migrated and re-verified, not silently broken by an
+# unpinned upper bound. [cli] extra pulls in click/rich, which FastMCP needs.
+mcp = ["mcp[cli]>=1.2.0,<2.0.0"]
 ai = ["python-dotenv>=1.0.0"]
 dev = ["pytest>=7.0"]
 
