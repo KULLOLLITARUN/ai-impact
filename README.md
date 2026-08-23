@@ -38,6 +38,15 @@ Or run without installing:
 python -m cli.main analyze --diff HEAD~1
 ```
 
+### Try it immediately, no setup
+
+```bash
+python examples/setup_demo_repo.py demo-repo
+ai-impact analyze --repo demo-repo --diff HEAD~1
+```
+
+Creates a tiny real repo with a signature-breaking, untested change so you can see a real `HIGH` finding right away. See [`examples/`](examples/).
+
 ### Exit codes (for CI gating)
 
 | Code | Meaning |
