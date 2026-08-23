@@ -1,0 +1,16 @@
+[project]
+name = "ai-impact"
+version = "0.1.0"
+description = "Deterministic change-impact and test-gap analyzer for AI-assisted development"
+requires-python = ">=3.10"
+
+[project.optional-dependencies]
+mcp = ["mcp>=1.0.0"]
+ai = ["python-dotenv>=1.0.0"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+
+[project.scripts]
+ai-impact = "cli.main:main"
