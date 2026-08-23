@@ -1,5 +1,7 @@
 # AI Impact
 
+[![CI](https://github.com/KULLOLLITARUN/ai-impact/actions/workflows/ci.yml/badge.svg)](https://github.com/KULLOLLITARUN/ai-impact/actions/workflows/ci.yml)
+
 Analyzes the statically discoverable blast radius of a Python code change, identifies likely test gaps, and (optionally) uses an LLM to explain the findings in plain language.
 
 The deterministic core needs no API key and no setup beyond Python + git. It never invents a caller, a risk level, or a dollar figure — every number in a report is traceable back to the diff and the repo's own call graph. See [`AI_Impact_Analyzer_PLAN.md`](../r%26d/AI_Impact_Analyzer_PLAN.md) for the full design.
