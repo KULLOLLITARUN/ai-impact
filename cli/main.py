@@ -77,6 +77,13 @@ def main(argv: list[str] | None = None) -> int:
     )
     explain_cmd.add_argument("--provider", choices=["gemini", "groq"], default="gemini")
 
+    serve_cmd = sub.add_parser("serve", help="Open the Impact Workbench, a local web UI, for this repo")
+    serve_cmd.add_argument("--diff", dest="diff_ref", default=None, help="git ref to diff against, e.g. HEAD~1")
+    serve_cmd.add_argument("--staged", action="store_true", help="analyze staged changes instead of a ref")
+    serve_cmd.add_argument("--repo", default=".", help="path to the git repo (default: current directory)")
+    serve_cmd.add_argument("--port", type=int, default=8765)
+    serve_cmd.add_argument("--no-browser", action="store_true", help="don't auto-open a browser tab")
+
     args = parser.parse_args(argv)
 
     if args.command == "analyze":
@@ -133,6 +140,14 @@ def main(argv: list[str] | None = None) -> int:
             return 0
 
         print(prose)
+        return 0
+
+    if args.command == "serve":
+        from ui.server import serve as serve_workbench
+
+        serve_workbench(
+            args.repo, args.diff_ref, args.staged, args.port, open_browser=not args.no_browser
+        )
         return 0
 
     return 3

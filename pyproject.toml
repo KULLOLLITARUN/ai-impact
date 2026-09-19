@@ -26,4 +26,4 @@ testpaths = ["tests"]
 ai-impact = "cli.main:main"
 
 [tool.setuptools]
-packages = ["core", "cli", "mcp_impact", "ai"]
+packages = ["core", "cli", "mcp_impact", "ai", "ui"]
